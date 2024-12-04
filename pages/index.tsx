@@ -26,6 +26,7 @@ import {
   saveDataImpl,
   Task,
 } from "../functions/taskData";
+import axios from "axios";
 
 export default function Home() {
   const [showAddDiag, setShowDiag] = useState(false);
@@ -36,22 +37,23 @@ export default function Home() {
   };
 
   const getData = async () => {
-    const data = await getDataImpl();
-    setTasks(data);
+    const response = await axios.get('/api/todos');
+    setTasks(JSON.parse(response.data.data));
   };
 
-  const saveData = async (name: string, data: string) => {
-    const task: Task = {
-      name: name,
-      taskData: data,
-    };
-    await saveDataImpl(task);
+  const saveData = async (name: string, taskData: string) => {
+
+    const response = await axios.post('/api/todos', { name, taskData: taskData }, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
     setShowDiag(false);
-    getData();
+    await getData();
   };
 
   const deleteData = async (index: number) => {
-    await delDataImpl(index);
+    const response = await axios.delete('/api/todos', { data: { data: index }, });
     await getData();
   };
 
@@ -133,7 +135,7 @@ export default function Home() {
           </Typography>
         )}
 
-        {tasks.map((task, index) => (
+        {tasks && tasks.length!==0 && tasks.map((task, index) => (
           <Card
             sx={{
               height: "100%",
