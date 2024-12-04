@@ -11,6 +11,7 @@ export default function MyApp(props: AppProps) {
   return (
     <AppCacheProvider {...props}>
       <Head>
+        <title>Task App</title>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
       <ThemeProvider theme={theme}>

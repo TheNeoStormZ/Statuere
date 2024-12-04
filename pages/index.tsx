@@ -18,15 +18,46 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AppBar from "../components/appBar";
+import {
+  delDataImpl,
+  getDataImpl,
+  saveDataImpl,
+  Task,
+} from "../functions/taskData";
 
 export default function Home() {
   const [showAddDiag, setShowDiag] = useState(false);
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   const handleButtonClick = () => {
     setShowDiag(true);
   };
+
+  const getData = () => {
+    const data = getDataImpl();
+    setTasks(data);
+  };
+
+  const saveData = (name: string, data: string) => {
+    const task: Task = {
+      name: name,
+      taskData: data,
+    };
+    saveDataImpl(task);
+    setShowDiag(false);
+    getData();
+  };
+
+  const deleteData = (index: number) => {
+    delDataImpl(index);
+    getData();
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   return (
     <Container maxWidth="lg">
@@ -42,9 +73,9 @@ export default function Home() {
             event.preventDefault();
             const formData = new FormData(event.currentTarget);
             const formJson = Object.fromEntries((formData as any).entries());
-            const email = formJson.email;
-            console.log(email);
-            setShowDiag(false);
+            const name = formJson.taskName;
+            const data = formJson.taskData;
+            saveData(name, data);
           },
         }}
       >
@@ -91,39 +122,50 @@ export default function Home() {
         <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
           Task App
         </Typography>
-        <Card
-          sx={{
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <CardActionArea onClick={() => alert("yeah")}>
-            <CardHeader avatar={<TaskAltIcon />} />
 
-            <CardContent sx={{ flexGrow: 1 }}>
-              <Typography gutterBottom variant="h5" component="h2">
-                Test
-              </Typography>
-              <Typography>description</Typography>
-            </CardContent>
-          </CardActionArea>
-          <CardActions
+        {tasks.length == 0 && (
+          <Typography
+            variant="h4"
+            component="h4"
+            sx={{ mb: 2, textAlign: "center" }}
+          >
+            No tasks found
+          </Typography>
+        )}
+
+        {tasks.map((task, index) => (
+          <Card
             sx={{
-              width: "100%",
-              justifyContent: "flex-end",
-              pr: 3,
-              mt: "auto",
+              height: "100%",
+              display: "flex",
+              marginBottom: 2,
+              flexDirection: "column",
             }}
           >
-            <IconButton
-              aria-label="delete"
-              onClick={() => alert("DELETE TRIGGER")}
+            <CardActionArea onClick={() => alert("yeah")}>
+              <CardHeader avatar={<TaskAltIcon />} />
+
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Typography gutterBottom variant="h5" component="h2">
+                  {task.name}
+                </Typography>
+                <Typography>{task.taskData}</Typography>
+              </CardContent>
+            </CardActionArea>
+            <CardActions
+              sx={{
+                width: "100%",
+                justifyContent: "flex-end",
+                pr: 3,
+                mt: "auto",
+              }}
             >
-              <DeleteIcon />
-            </IconButton>
-          </CardActions>
-        </Card>
+              <IconButton aria-label="delete" onClick={() => deleteData(index)}>
+                <DeleteIcon />
+              </IconButton>
+            </CardActions>
+          </Card>
+        ))}
       </Box>
     </Container>
   );
