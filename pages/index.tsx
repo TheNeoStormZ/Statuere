@@ -35,24 +35,24 @@ export default function Home() {
     setShowDiag(true);
   };
 
-  const getData = () => {
-    const data = getDataImpl();
+  const getData = async () => {
+    const data = await getDataImpl();
     setTasks(data);
   };
 
-  const saveData = (name: string, data: string) => {
+  const saveData = async (name: string, data: string) => {
     const task: Task = {
       name: name,
       taskData: data,
     };
-    saveDataImpl(task);
+    await saveDataImpl(task);
     setShowDiag(false);
     getData();
   };
 
-  const deleteData = (index: number) => {
-    delDataImpl(index);
-    getData();
+  const deleteData = async (index: number) => {
+    await delDataImpl(index);
+    await getData();
   };
 
   useEffect(() => {
