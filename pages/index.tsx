@@ -1,8 +1,8 @@
 import DeleteIcon from "@mui/icons-material/Delete";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import {
   Button,
-  CardActionArea,
   CardActions,
   CardHeader,
   Dialog,
@@ -11,22 +11,19 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
-  TextField,
+  TextField
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
+import axios from "axios";
 import { useEffect, useState } from "react";
 import AppBar from "../components/appBar";
 import {
-  delDataImpl,
-  getDataImpl,
-  saveDataImpl,
-  Task,
+  Task
 } from "../functions/taskData";
-import axios from "axios";
 
 export default function Home() {
   const [showAddDiag, setShowDiag] = useState(false);
@@ -37,23 +34,26 @@ export default function Home() {
   };
 
   const getData = async () => {
-    const response = await axios.get('/api/todos');
+    const response = await axios.get("/api/todos");
     setTasks(JSON.parse(response.data.data));
   };
 
   const saveData = async (name: string, taskData: string) => {
-
-    const response = await axios.post('/api/todos', { name, taskData: taskData }, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axios.post(
+      "/api/todos",
+      { name, taskData: taskData },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     setShowDiag(false);
     await getData();
   };
 
   const deleteData = async (index: number) => {
-    const response = await axios.delete('/api/todos', { data: { data: index }, });
+    const response = await axios.delete("/api/todos/"+ index);
     await getData();
   };
 
@@ -62,113 +62,133 @@ export default function Home() {
   }, []);
 
   return (
-    <Container maxWidth="lg">
+    <Box>
       <AppBar onButtonClick={handleButtonClick} />
-      <Dialog
-        open={showAddDiag}
-        onClose={setShowDiag}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        PaperProps={{
-          component: "form",
-          onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault();
-            const formData = new FormData(event.currentTarget);
-            const formJson = Object.fromEntries((formData as any).entries());
-            const name = formJson.taskName;
-            const data = formJson.taskData;
-            saveData(name, data);
-          },
-        }}
-      >
-        <DialogTitle id="alert-dialog-title">{"Add a task"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Fill the form to add a task
-          </DialogContentText>
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            id="taskName"
-            name="taskName"
-            label="Task Name"
-            type="text"
-            fullWidth
-            variant="standard"
-          />
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            id="taskData"
-            name="taskData"
-            label="Task Info"
-            type="text"
-            fullWidth
-            variant="standard"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowDiag(false)}>Cancel</Button>
-          <Button type="submit" autoFocus>
-            Add
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Box
-        sx={{
-          my: 4,
-        }}
-      >
-        <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
-          Task App
-        </Typography>
-
-        {tasks.length == 0 && (
-          <Typography
-            variant="h4"
-            component="h4"
-            sx={{ mb: 2, textAlign: "center" }}
-          >
-            No tasks found
+      <Container>
+        <Dialog
+          open={showAddDiag}
+          onClose={setShowDiag}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          PaperProps={{
+            component: "form",
+            onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+              event.preventDefault();
+              const formData = new FormData(event.currentTarget);
+              const formJson = Object.fromEntries((formData as any).entries());
+              const name = formJson.taskName;
+              const data = formJson.taskData;
+              saveData(name, data);
+            },
+          }}
+        >
+          <DialogTitle id="alert-dialog-title">{"Add a task"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Fill the form to add a task
+            </DialogContentText>
+            <TextField
+              autoFocus
+              required
+              margin="dense"
+              id="taskName"
+              name="taskName"
+              label="Task Name"
+              type="text"
+              fullWidth
+              variant="standard"
+            />
+            <TextField
+              autoFocus
+              required
+              margin="dense"
+              id="taskData"
+              name="taskData"
+              label="Task Info"
+              type="text"
+              fullWidth
+              variant="standard"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setShowDiag(false)}>Cancel</Button>
+            <Button type="submit" autoFocus>
+              Add
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Box
+          sx={{
+            my: 4,
+          }}
+        >
+          <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
+            My Tasks
           </Typography>
-        )}
 
-        {tasks && tasks.length!==0 && tasks.map((task, index) => (
-          <Card
-            sx={{
-              height: "100%",
-              display: "flex",
-              marginBottom: 2,
-              flexDirection: "column",
-            }}
-          >
-            <CardActionArea onClick={() => alert("yeah")}>
-              <CardHeader avatar={<TaskAltIcon />} />
-
-              <CardContent sx={{ flexGrow: 1 }}>
-                <Typography gutterBottom variant="h5" component="h2">
-                  {task.name}
-                </Typography>
-                <Typography>{task.taskData}</Typography>
-              </CardContent>
-            </CardActionArea>
-            <CardActions
-              sx={{
-                width: "100%",
-                justifyContent: "flex-end",
-                pr: 3,
-                mt: "auto",
-              }}
+          {tasks.length == 0 && (
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center"
+              height="100vh"
             >
-              <IconButton aria-label="delete" onClick={() => deleteData(index)}>
-                <DeleteIcon />
-              </IconButton>
-            </CardActions>
-          </Card>
-        ))}
-      </Box>
-    </Container>
+              <DoneAllIcon
+                sx={{
+                  fontSize: 60,
+                  mb: 2,
+                }}
+              />
+              <Typography
+                variant="h4"
+                component="h4"
+                sx={{ mb: 2, textAlign: "center" }}
+              >
+                No tasks found, everything is up to date!
+              </Typography>
+            </Box>
+          )}
+
+          {tasks &&
+            tasks.length !== 0 &&
+            tasks.map((task, index) => (
+              <Card
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  marginBottom: 2,
+                  flexDirection: "column",
+                }}
+              >
+                <CardHeader avatar={<TaskAltIcon />} />
+
+                <CardContent sx={{ flexGrow: 1 }}>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    {task.name}
+                  </Typography>
+                  <Typography>{task.taskData}</Typography>
+                </CardContent>
+
+                <CardActions
+                  sx={{
+                    width: "100%",
+                    justifyContent: "flex-end",
+                    pr: 3,
+                    mt: "auto",
+                  }}
+                >
+                  <IconButton
+                    aria-label="delete"
+                    onClick={() => deleteData(index)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </CardActions>
+              </Card>
+            ))}
+        </Box>
+      </Container>
+    </Box>
   );
 }

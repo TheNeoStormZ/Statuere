@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
 
 interface ButtonAppBarProps {
   onButtonClick: () => void;
@@ -23,10 +24,10 @@ const ButtonAppBar: React.FC<ButtonAppBarProps> = ({ onButtonClick }) => {
             aria-label="menu"
             sx={{ mr: 2 }}
           >
-            <MenuIcon />
+            <TaskAltIcon/>
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Task App
+          Statuere
           </Typography>
           <IconButton aria-label="create" onClick={onButtonClick}>
             <AddTaskIcon />
