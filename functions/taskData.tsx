@@ -1,6 +1,7 @@
 export interface Task {
     name: string;
     taskData: string;
+    completed: boolean;
   }
   
   let tasks: Task[] = [];
@@ -16,4 +17,10 @@ export interface Task {
   export const delDataImpl = async (index: number) => {
     tasks.splice(index, 1);
   };
-  
+
+  export const setCompletedImpl = async (index: number) => {
+    let {name, taskData, completed} = tasks[index];
+    tasks.splice(index, 1);
+    const task: Task = { name: name, taskData: taskData,completed: true };
+    await saveDataImpl(task);
+  };

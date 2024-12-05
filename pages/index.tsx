@@ -11,7 +11,7 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
-  TextField
+  TextField,
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
@@ -21,9 +21,7 @@ import Typography from "@mui/material/Typography";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import AppBar from "../components/appBar";
-import {
-  Task
-} from "../functions/taskData";
+import { Task } from "../functions/taskData";
 
 export default function Home() {
   const [showAddDiag, setShowDiag] = useState(false);
@@ -38,10 +36,14 @@ export default function Home() {
     setTasks(JSON.parse(response.data.data));
   };
 
-  const saveData = async (name: string, taskData: string) => {
+  const saveData = async (
+    name: string,
+    taskData: string,
+    completed: boolean
+  ) => {
     const response = await axios.post(
       "/api/todos",
-      { name, taskData: taskData },
+      { name, taskData: taskData, completed },
       {
         headers: {
           "Content-Type": "application/json",
@@ -53,7 +55,12 @@ export default function Home() {
   };
 
   const deleteData = async (index: number) => {
-    const response = await axios.delete("/api/todos/"+ index);
+    const response = await axios.delete("/api/todos/" + index);
+    await getData();
+  };
+
+  const doneMark = async (index: number) => {
+    const response = await axios.put("/api/todos/" + index);
     await getData();
   };
 
@@ -78,7 +85,7 @@ export default function Home() {
               const formJson = Object.fromEntries((formData as any).entries());
               const name = formJson.taskName;
               const data = formJson.taskData;
-              saveData(name, data);
+              saveData(name, data, false);
             },
           }}
         >
@@ -152,41 +159,95 @@ export default function Home() {
 
           {tasks &&
             tasks.length !== 0 &&
-            tasks.map((task, index) => (
-              <Card
-                sx={{
-                  height: "100%",
-                  display: "flex",
-                  marginBottom: 2,
-                  flexDirection: "column",
-                }}
-              >
-                <CardHeader avatar={<TaskAltIcon />} />
-
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography gutterBottom variant="h5" component="h2">
-                    {task.name}
-                  </Typography>
-                  <Typography>{task.taskData}</Typography>
-                </CardContent>
-
-                <CardActions
+            tasks
+              .filter((task) => !task.completed)
+              .map((task, index) => (
+                <Card
                   sx={{
-                    width: "100%",
-                    justifyContent: "flex-end",
-                    pr: 3,
-                    mt: "auto",
+                    height: "100%",
+                    display: "flex",
+                    marginBottom: 2,
+                    flexDirection: "column",
                   }}
                 >
-                  <IconButton
-                    aria-label="delete"
-                    onClick={() => deleteData(index)}
+                  <CardHeader avatar={<TaskAltIcon />} />
+
+                  <CardContent sx={{ flexGrow: 1 }}>
+                    <Typography gutterBottom variant="h5" component="h2">
+                      {task.name}
+                    </Typography>
+                    <Typography>{task.taskData}</Typography>
+                  </CardContent>
+
+                  <CardActions
+                    sx={{
+                      width: "100%",
+                      justifyContent: "flex-end",
+                      pr: 3,
+                      mt: "auto",
+                    }}
                   >
-                    <DeleteIcon />
-                  </IconButton>
-                </CardActions>
-              </Card>
-            ))}
+                    <IconButton
+                      aria-label="delete"
+                      onClick={() => deleteData(index)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                    <IconButton
+                      aria-label="done"
+                      onClick={() => doneMark(index)}
+                    >
+                      <DoneAllIcon />
+                    </IconButton>
+                  </CardActions>
+                </Card>
+              ))}
+
+          {tasks && tasks.filter((task) => task.completed).length !== 0 && (
+            <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
+              Completed tasks
+            </Typography>
+          )}
+
+          {tasks &&
+            tasks.length !== 0 &&
+            tasks
+              .filter((task) => task.completed)
+              .map((task, index) => (
+                <Card
+                  sx={{
+                    height: "100%",
+                    display: "flex",
+                    marginBottom: 2,
+                    flexDirection: "column",
+                  }}
+                >
+                  <CardHeader avatar={<TaskAltIcon />} />
+
+                  <CardContent sx={{ flexGrow: 1 }}>
+                    <Typography gutterBottom variant="h5" component="h2">
+                      {task.name}
+                    </Typography>
+                    <Typography>{task.taskData}</Typography>
+                  </CardContent>
+
+                  <CardActions
+                    sx={{
+                      width: "100%",
+                      justifyContent: "flex-end",
+                      pr: 3,
+                      mt: "auto",
+                    }}
+                  >
+                    <IconButton
+                      aria-label="delete"
+                      onClick={() => deleteData(index)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </CardActions>
+                </Card>
+              ))}
         </Box>
       </Container>
     </Box>
