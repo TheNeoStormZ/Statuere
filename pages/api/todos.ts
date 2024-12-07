@@ -14,11 +14,9 @@ export default async function handler(
     const resData: ResponseData = {
       data: JSON.stringify(tasks),
     };
-    console.log(resData);
     res.status(200).json(resData);
   } else if (req.method === "POST") {
     const { name, taskData, completed } = req.body;
-    console.log(req.body);
     if (!name || !taskData) {
       return res.status(400).json({ data: "Empty form" });
     }
