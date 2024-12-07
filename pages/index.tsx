@@ -1,18 +1,7 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
-import {
-  Button,
-  CardActions,
-  CardHeader,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  IconButton,
-  TextField,
-} from "@mui/material";
+import { CardActions, CardHeader, IconButton } from "@mui/material";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -20,11 +9,14 @@ import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import AddTaskDialog from "../components/AddTaskDialog";
 import AppBar from "../components/appBar";
+import ErrorDialog from "../components/ErrorDialog";
 import { Task } from "../functions/taskData";
 
 export default function Home() {
   const [showAddDiag, setShowDiag] = useState(false);
+  const [showErrorDiag, setShowErrorDiag] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
 
   const handleButtonClick = () => {
@@ -32,8 +24,14 @@ export default function Home() {
   };
 
   const getData = async () => {
-    const response = await axios.get("/api/todos");
-    setTasks(JSON.parse(response.data.data));
+    let response;
+    try {
+      response = await axios.get("/api/todos");
+      setTasks(JSON.parse(response.data.data));
+    } catch {
+      setShowErrorDiag(true);
+      console.log("Error found while updating data");
+    }
   };
 
   const saveData = async (
@@ -41,26 +39,44 @@ export default function Home() {
     taskData: string,
     completed: boolean
   ) => {
-    const response = await axios.post(
-      "/api/todos",
-      { name, taskData: taskData, completed },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    let response;
+    try {
+      response = await axios.post(
+        "/api/todos",
+        { name, taskData: taskData, completed },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    } catch {
+      setShowErrorDiag(true);
+      console.log("Error found while saving data");
+    }
     setShowDiag(false);
     await getData();
   };
 
   const deleteData = async (index: number) => {
-    const response = await axios.delete("/api/todos/" + index);
+    let response;
+    try {
+      response = await axios.delete("/api/todos/" + index);
+    } catch {
+      setShowErrorDiag(true);
+      console.log("Error found while deleting");
+    }
     await getData();
   };
 
   const doneMark = async (index: number) => {
-    const response = await axios.put("/api/todos/" + index);
+    let response;
+    try {
+      response = await axios.put("/api/todos/" + index);
+    } catch {
+      setShowErrorDiag(true);
+      console.log("Error found while updating data");
+    }
     await getData();
   };
 
@@ -72,58 +88,12 @@ export default function Home() {
     <Box>
       <AppBar onButtonClick={handleButtonClick} />
       <Container>
-        <Dialog
+        <AddTaskDialog
           open={showAddDiag}
           onClose={setShowDiag}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-          PaperProps={{
-            component: "form",
-            onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-              event.preventDefault();
-              const formData = new FormData(event.currentTarget);
-              const formJson = Object.fromEntries((formData as any).entries());
-              const name = formJson.taskName;
-              const data = formJson.taskData;
-              saveData(name, data, false);
-            },
-          }}
-        >
-          <DialogTitle id="alert-dialog-title">{"Add a task"}</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              Fill the form to add a task
-            </DialogContentText>
-            <TextField
-              autoFocus
-              required
-              margin="dense"
-              id="taskName"
-              name="taskName"
-              label="Task Name"
-              type="text"
-              fullWidth
-              variant="standard"
-            />
-            <TextField
-              autoFocus
-              required
-              margin="dense"
-              id="taskData"
-              name="taskData"
-              label="Task Info"
-              type="text"
-              fullWidth
-              variant="standard"
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setShowDiag(false)}>Cancel</Button>
-            <Button type="submit" autoFocus>
-              Add
-            </Button>
-          </DialogActions>
-        </Dialog>
+          saveData={saveData}
+        />
+        <ErrorDialog open={showErrorDiag} onClose={setShowErrorDiag} />
         <Box
           sx={{
             my: 4,

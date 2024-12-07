@@ -1,12 +1,11 @@
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import AddTaskIcon from '@mui/icons-material/AddTask';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import AddTaskIcon from "@mui/icons-material/AddTask";
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import * as React from "react";
 
 interface ButtonAppBarProps {
   onButtonClick: () => void;
@@ -24,10 +23,10 @@ const ButtonAppBar: React.FC<ButtonAppBarProps> = ({ onButtonClick }) => {
             aria-label="menu"
             sx={{ mr: 2 }}
           >
-            <TaskAltIcon/>
+            <TaskAltIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Statuere
+            Statuere
           </Typography>
           <IconButton aria-label="create" onClick={onButtonClick}>
             <AddTaskIcon />
