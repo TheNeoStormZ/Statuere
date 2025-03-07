@@ -1,3 +1,5 @@
+"use client"
+
 import DeleteIcon from "@mui/icons-material/Delete";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
@@ -14,10 +16,14 @@ import AppBar from "../components/appBar";
 import ErrorDialog from "../components/ErrorDialog";
 import { Task } from "../functions/taskData";
 
+import { authClient } from "../lib/auth-client" // import the auth client 
+
+
 export default function Home() {
   const [showAddDiag, setShowDiag] = useState(false);
   const [showErrorDiag, setShowErrorDiag] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
+
 
   const handleButtonClick = () => {
     setShowDiag(true);
@@ -25,6 +31,10 @@ export default function Home() {
 
   const getData = async () => {
     let response;
+    const { data: session, error } = await authClient.getSession();
+
+    console.log(session);
+  
     try {
       response = await axios.get("/api/todos");
       setTasks(JSON.parse(response.data.data));
@@ -95,6 +105,7 @@ export default function Home() {
         />
         <ErrorDialog open={showErrorDiag} onClose={setShowErrorDiag} />
         <Box
+        key="global-box"
           sx={{
             my: 4,
           }}
@@ -133,6 +144,7 @@ export default function Home() {
               .filter((task) => !task.completed)
               .map((task, index) => (
                 <Card
+                key={index}
                   sx={{
                     height: "100%",
                     display: "flex",
