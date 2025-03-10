@@ -10,9 +10,10 @@ import Link from "@mui/material/Link";
 import { ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useState } from "react";
-
+import FingerprintIcon from '@mui/icons-material/Fingerprint';
+import { redirect } from 'next/navigation'
 import { Grid2, Theme } from "@mui/material";
+import { authClient } from "../../lib/auth-client";
 
 interface LoginComponent {
     handleSubmit: (event: {
@@ -43,6 +44,15 @@ interface LoginComponent {
 const LoginComponent: React.FC<LoginComponent> = ({ handleSubmit, theme, showAlert }) => {
 
     
+
+  async function loginWithPasskey(): Promise<void> {
+    
+  const data = await authClient.signIn.passkey();
+  if (!data || !data?.error) {
+    redirect('/');
+  }
+  
+  }
 
     return(
         <ThemeProvider theme={theme}>
@@ -92,9 +102,18 @@ const LoginComponent: React.FC<LoginComponent> = ({ handleSubmit, theme, showAle
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 0 }}
             >
               Log In
+            </Button>
+            <Button
+              fullWidth
+              variant="outlined"
+              startIcon={<FingerprintIcon/>}
+              onClick={() => loginWithPasskey()}
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Use Passkey
             </Button>
             <Grid2 container>
               <Grid2>

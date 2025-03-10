@@ -92,6 +92,7 @@ const TaskComponent: React.FC<TaskComponentProps> = ({ tasks, setShowErrorDiag, 
       key="global-box"
         sx={{
           my: 4,
+          mt:15,
         }}
       >
         <Typography variant="h4" component="h1" sx={{ mb: 2 }}>

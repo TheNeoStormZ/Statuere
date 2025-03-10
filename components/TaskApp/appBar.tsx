@@ -26,9 +26,16 @@ const ButtonAppBar: React.FC<ButtonAppBarProps> = ({ onButtonClick }) => {
 
   const settings: action[] = [
     {
+      info: "Add Passkey",
+      action: addPaskey,
+    },
+
+    {
       info: "Log out",
       action: logOut,
-    }
+    },
+
+
 ];
 
   async function logOut() {
@@ -41,6 +48,12 @@ const ButtonAppBar: React.FC<ButtonAppBarProps> = ({ onButtonClick }) => {
       },
     },
   })
+}
+
+async function addPaskey() {
+
+  const data = await authClient.passkey.addPasskey();
+
 }
 
   async function getData() {
@@ -60,7 +73,7 @@ const ButtonAppBar: React.FC<ButtonAppBarProps> = ({ onButtonClick }) => {
   return (
 
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar position="fixed">
         <Toolbar>
           <IconButton
             size="large"

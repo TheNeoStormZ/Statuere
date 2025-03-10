@@ -16,7 +16,7 @@ const CustomMenu: React.FC<CustomMenuProps> = ({
 }) => {
   return (
     <Menu
-      sx={{ mt: "45px" }}
+      sx={{ mt: -8 }}
       id="menu-appbar"
       anchorOrigin={{
         vertical: "top",
