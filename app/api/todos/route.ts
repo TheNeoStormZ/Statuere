@@ -18,12 +18,12 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json(); 
-    const { name, taskData, completed } = body;
+    const { name, taskData, completed, id, userId } = body;
 
     if (!name || !taskData) {
       return NextResponse.json({ data: "Empty form" }, { status: 400 }); 
     }
-    const task: Task = { name, taskData, completed };
+    const task: Task = { name, taskData, completed, id, userId };
     await saveDataImpl(task);
     return NextResponse.json({ data: "Saved succesffully" }, { status: 200 }); 
   } catch (error) {
