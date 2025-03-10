@@ -16,7 +16,7 @@ export async function DELETE(req: NextRequest, props: { params: Promise<{ id: st
   }
 
   try {
-    await delDataImpl(Number(id));
+    await delDataImpl(String(id));
     return NextResponse.json({ data: "Deleted successfully" }, { status: 200 });
   } catch (error) {
     console.error(error);
@@ -36,7 +36,7 @@ export async function PUT(req: NextRequest, props: { params: Promise<{ id: strin
 
   try {
 
-    await setCompletedImpl(Number(id));
+    await setCompletedImpl(String(id));
 
     return NextResponse.json({ data: "Updated successfully" }, { status: 200 });
   } catch (error) {
