@@ -11,6 +11,7 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
 import { Grid2, Theme } from "@mui/material";
+import { JSX } from "react";
 
 interface RegisterComponent {
   handleSubmit: (event: {
